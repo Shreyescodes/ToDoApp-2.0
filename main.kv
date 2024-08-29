@@ -4,7 +4,7 @@ MDFloatLayout:
         elevation: 10
         pos_hint: {"top": 1}
         left_action_items: [["menu", lambda x: None]]
-        right_action_items: [["dots-vertical", lambda x: None], ["bell", lambda x: None], ["magnify", lambda x: None]]
+        right_action_items: [["magnify", lambda x: app.show_search_dialog()], ["dots-vertical", lambda x: None], ["bell", lambda x: None]]
         md_bg_color: app.theme_cls.primary_color
         title_color: 1, 1, 1, 1
 
