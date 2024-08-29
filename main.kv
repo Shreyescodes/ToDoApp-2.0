@@ -1,0 +1,183 @@
+MDFloatLayout:
+    MDTopAppBar:
+        title: "ToDoApp"
+        elevation: 10
+        pos_hint: {"top": 1}
+        left_action_items: [["menu", lambda x: None]]
+        right_action_items: [["dots-vertical", lambda x: None], ["bell", lambda x: None], ["magnify", lambda x: None]]
+        md_bg_color: app.theme_cls.primary_color
+        title_color: 1, 1, 1, 1
+
+    MDBoxLayout:
+        orientation: 'horizontal'
+        size_hint_y: None
+        height: self.minimum_height
+        padding: 10, 5
+        spacing: 10
+        pos_hint: {"top": 0.85}
+
+        MDRaisedButton:
+            text: "Today's Tasks"
+            on_release: app.show_today_tasks()
+
+        MDRaisedButton:
+            text: "Delayed Tasks"
+            on_release: app.show_delayed_tasks()
+
+        MDRaisedButton:
+            text: "Upcoming Tasks"
+            on_release: app.show_upcoming_tasks()
+
+        MDRaisedButton:
+            text: "Completed Tasks"
+            on_release: app.show_completed_tasks()
+
+    ScrollView:
+        id: today_tasks_view
+        size_hint_y: None
+        height: 400
+        pos_hint: {'center_x': .5, 'center_y': .5}
+        do_scroll_x: False
+        do_scroll_y: True
+        MDList:
+            id: today_container
+
+    ScrollView:
+        id: delayed_tasks_view
+        size_hint_y: None
+        height: 0
+        pos_hint: {'center_x': .5, 'center_y': .5}
+        do_scroll_x: False
+        do_scroll_y: True
+        MDList:
+            id: delayed_container
+
+    ScrollView:
+        id: upcoming_tasks_view
+        size_hint_y: None
+        height: 0
+        pos_hint: {'center_x': .5, 'center_y': .5}
+        do_scroll_x: False
+        do_scroll_y: True
+        MDList:
+            id: upcoming_container
+
+    ScrollView:
+        id: completed_tasks_view
+        size_hint_y: None
+        height: 0
+        pos_hint: {'center_x': .5, 'center_y': .5}
+        do_scroll_x: False
+        do_scroll_y: True
+        MDList:
+            id: completed_container
+
+    MDFloatingActionButton:
+        icon: 'plus'
+        on_release: app.show_task_dialog()
+        elevation_normal: 25
+        pos_hint: {'x': .85, 'y': .05}
+        md_bg_color: app.theme_cls.primary_color
+        icon_color: app.theme_cls.accent_color
+
+<DialogContent>:
+    orientation: "vertical"
+    spacing: "15dp"
+    size_hint: 1, None
+    height: "150dp"
+    padding: "10dp"
+
+    GridLayout:
+        cols: 2
+        rows: 1
+        spacing: "10dp"
+
+        MDTextField:
+            id: task_text
+            hint_text: "Task..."
+            pos_hint: {"center_y": .5}
+            max_text_length: 50
+            on_text_validate: (app.add_task(task_text, date_text.text), app.close_dialog())
+            color_mode: "custom"
+            line_color_normal: app.theme_cls.primary_color
+
+        MDIconButton:
+            icon: 'calendar'
+            on_release: root.show_date_picker()
+            padding: '10dp'
+            theme_icon_color: "Custom"
+            icon_color: app.theme_cls.primary_color
+
+    MDLabel:
+        spacing: '10dp'
+        id: date_text
+        halign: 'center'
+
+    BoxLayout:
+        orientation: 'horizontal'
+        spacing: "10dp"
+        size_hint_y: None
+        height: "40dp"
+
+        MDRaisedButton:
+            text: "Save"
+            on_release: (app.add_task(task_text, date_text.text), app.close_dialog())
+            md_bg_color: app.theme_cls.primary_color
+            text_color: 1, 1, 1, 1
+
+        MDFlatButton:
+            text: 'Cancel'
+            on_release: app.close_dialog()
+            theme_text_color: "Custom"
+            text_color: app.theme_cls.primary_color
+
+<ListItemWithCheckbox>:
+    id: the_list_item
+    markup: True
+    padding: "10dp"
+    spacing: "10dp"
+    bg_color: self.bg_color
+    canvas.before:
+        Color:
+            rgba: self.bg_color
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
+    LeftCheckbox:
+        id: check
+        on_release:
+            root.mark(check, the_list_item)
+        size_hint: None, 1
+        width: "48dp"
+
+    IconRightWidget:
+        icon: 'trash-can-outline'
+        theme_text_color: "Custom"
+        text_color: 1, 0, 0, 1
+        on_release:
+            root.delete_item(the_list_item)
+        size_hint: None, 1
+        width: "48dp"
+
+<SearchDialog>:
+    orientation: "vertical"
+    spacing: "12dp"
+    size_hint_y: None
+    height: "120dp"
+
+    MDTextField:
+        id: search_text
+        hint_text: "Search tasks..."
+        on_text_validate: app.search_task(self.text)
+
+    BoxLayout:
+        orientation: 'horizontal'
+
+        MDRaisedButton:
+            text: "Search"
+            on_release: app.search_task(search_text.text)
+
+        MDFlatButton:
+            text: 'Cancel'
+            on_release: app.close_search_dialog()
