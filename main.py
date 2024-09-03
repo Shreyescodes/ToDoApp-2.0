@@ -9,6 +9,7 @@ from kivymd.uix.selectioncontrol import MDCheckbox
 from kivy.properties import ListProperty
 from kivymd.uix.button import MDFlatButton
 import logging
+from kivymd.uix.menu import MDDropdownMenu
 
 # Set up logging
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -69,6 +70,7 @@ class SearchDialog(MDBoxLayout):
 class MainApp(MDApp):
     task_list_dialog = None
     search_dialog = None
+    menu = None
 
     def build(self):
         self.theme_cls.primary_palette = "LightBlue"
@@ -76,6 +78,33 @@ class MainApp(MDApp):
         self.theme_cls.theme_style = "Light"
         self.theme_cls.accent_palette = "Red"
         self.theme_cls.accent_hue = "500"
+        
+        # Create the dropdown menu
+        menu_items = [
+            {
+                "text": f"{i}",
+                "viewclass": "OneLineListItem",
+                "on_release": lambda x=i: self.menu_callback(x),
+            } for i in ["Today's Tasks", "Delayed Tasks", "Upcoming Tasks", "Completed Tasks"]
+        ]
+        self.menu = MDDropdownMenu(
+            caller=self.root.ids.dropdown_button,
+            items=menu_items,
+            width_mult=4,
+        )
+
+    def menu_callback(self, text_item):
+        self.root.ids.dropdown_button.text = text_item
+        self.menu.dismiss()
+        
+        if text_item == "Today's Tasks":
+            self.show_today_tasks()
+        elif text_item == "Delayed Tasks":
+            self.show_delayed_tasks()
+        elif text_item == "Upcoming Tasks":
+            self.show_upcoming_tasks()
+        elif text_item == "Completed Tasks":
+            self.show_completed_tasks()
 
     def show_task_dialog(self):
         if not self.task_list_dialog:
@@ -216,6 +245,7 @@ class MainApp(MDApp):
 
             # Initially, show the today's tasks
             self.show_today_tasks()
+            self.root.ids.dropdown_button.text = "Today's Tasks"
 
         except Exception as e:
             logger.exception(f"Error in on_start: {e}")
