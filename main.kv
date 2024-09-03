@@ -17,20 +17,9 @@ MDFloatLayout:
         pos_hint: {"top": 0.85}
 
         MDRaisedButton:
+            id: dropdown_button
             text: "Today's Tasks"
-            on_release: app.show_today_tasks()
-
-        MDRaisedButton:
-            text: "Delayed Tasks"
-            on_release: app.show_delayed_tasks()
-
-        MDRaisedButton:
-            text: "Upcoming Tasks"
-            on_release: app.show_upcoming_tasks()
-
-        MDRaisedButton:
-            text: "Completed Tasks"
-            on_release: app.show_completed_tasks()
+            on_release: app.menu.open()
 
     ScrollView:
         id: today_tasks_view
